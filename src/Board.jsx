@@ -1,16 +1,6 @@
 import React, { useRef, useEffect,useState } from 'react';
-import ifresa from '../assets/img/fresa.webp';
-import ipacmanR from '../assets/img/pacman2open.png';
-import ipacmanL from '../assets/img/pacman2Lopen.png';
-import ipacmanU from '../assets/img/pacman2Uopen.png';
-import ipacmanD from '../assets/img/pacman2DRopen.png';
-import ighostRed from '../assets/img/red.png';
-import ighostBlue from '../assets/img/blue.png';
-import ighostPink from '../assets/img/pink.png';
-import ighostOrange from '../assets/img/orange.png';
+import ifresa from './assets/img/fresa.webp';
 
-import soundWaka from '../assets/sounds/pacman-waka-waka.mp3';
-import soundSiren from '../assets/sounds/pacman-siren.mp3';
 
 const WIDTH = 30;
 const WALL_WIDTH = 6;

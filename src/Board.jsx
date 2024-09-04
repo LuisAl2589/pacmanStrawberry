@@ -1,9 +1,18 @@
 import React, { useRef, useEffect,useState } from 'react';
 import ifresa from './assets/img/fresa.webp';
-import ipacmanR from './assets/img/pacman2open.png';
-import ipacmanL from './assets/img/pacman2Lopen.png';
-import ipacmanU from './assets/img/pacman2Uopen.png';
-import ipacmanD from './assets/img/pacman2DRopen.png';
+
+
+import pacmanRopen from './assets/img/pacmanRopen.png';
+import pacmanLopen from './assets/img/pacmanLopen.png';
+import pacmanUopen from './assets/img/pacmanUopen.png';
+import pacmanDopen from './assets/img/pacmanDopen.png';
+
+import pacmanRclose from './assets/img/pacmanRclose.png';
+import pacmanLclose from './assets/img/pacmanLclose.png';
+import pacmanUclose from './assets/img/pacmanUclose.png';
+import pacmanDclose from './assets/img/pacmanDclose.png';
+
+
 import ighostRed from './assets/img/red.png';
 import ighostBlue from './assets/img/blue.png';
 import ighostPink from './assets/img/pink.png';
@@ -74,13 +83,13 @@ export function Board(){
     const fresa = new Image;
     fresa.src = ifresa;
     const pacmanR = new Image;
-    pacmanR.src = ipacmanR+framePacman+".png";
+    pacmanR.src = framePacman==='open'?pacmanRopen:pacmanRclose;
     const pacmanL = new Image;
-    pacmanL.src = ipacmanL+framePacman+".png";
+    pacmanL.src = framePacman==='open'?pacmanLopen:pacmanLclose;
     const pacmanU = new Image;
-    pacmanU.src = ipacmanU+framePacman+".png";
+    pacmanU.src = framePacman==='open'?pacmanUopen:pacmanUclose;
     const pacmanD = new Image;
-    pacmanD.src = ipacmanD+framePacman+".png";
+    pacmanD.src = framePacman==='open'?pacmanDopen:pacmanDclose;
 
     const ghostRed = new Image;
     ghostRed.src = ighostRed;

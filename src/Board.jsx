@@ -38,12 +38,14 @@ export function Board(){
 
     const [maps,setMap] = useState(map);
     const [isAnimanding,setAnimanding] = useState(false);
+    const [isAnimandingGhost,setAnimandingGhost] = useState(true);
     const [pacmanPosition, setPacmanPosition] = useState({ x: 1, y: 1 });
     const [redPosition, setRedPosition] = useState({ x: 7, y: 8 });
     const [bluePosition, setBluePosition] = useState({ x: 9, y: 9 });
     const [pinkPosition, setPinkPosition] = useState({ x: 9, y: 10 });
     const [orangePosition, setOrangePosition] = useState({ x: 9, y: 11 });
     
+    const [directionGhostRed, setDirectionGhostRed] = useState('rigth');
 
     const [direction, setDirection] = useState('rigth');
     const [score, setScore] = useState(0);
@@ -109,8 +111,97 @@ export function Board(){
         setAnimanding(true)        
     };
 
-
+useEffect(()=>{
+    setTimeout(() => {
+        requestAnimationFrame(drawGhost);
+      }, isAnimandingGhost?SPEED:0); 
+},[redPosition])
     
+
+const drawGhost = () => {
+    let y = 0;
+    let x =0;
+    const newMap = [...map];
+   
+    switch (directionGhostRed) {
+        case 'up':
+            x-=1;
+            break;
+        case 'down':
+            x+=1;
+            break;
+        case 'left':
+            y-=1;
+            break;
+        case 'rigth':
+            y+=1;
+            break;
+        default:
+        break;
+    }
+
+    const newY = redPosition.y +y;
+    const newX = redPosition.x +x;
+    
+    if(newY===-1 && newX===9){
+        setRedPosition({x:9,y:maps[9].length})
+        setAnimandingGhost(true);
+        return;
+    }
+    if(newY===maps[9].length && newX===9 ){
+        setRedPosition({x:9,y:-1})
+        setAnimandingGhost(true);
+        return;
+    }
+
+    if(newMap[newX][newY] ===0){
+        let flag = false;
+        while(!flag){
+            let direction = Math.floor(Math.random() * 4);
+
+            switch (direction) {
+
+                case 0:
+                    if(newMap[redPosition.x][redPosition.y+1]!==0){
+                        setDirectionGhostRed('rigth');
+                        flag=true;
+                    }
+                    break;
+                case 1:
+                    if(newMap[redPosition.x][redPosition.y-1]!==0){
+                        setDirectionGhostRed('left');
+                        flag=true;
+                    }
+                    break;
+                case 2:
+                    if(newMap[redPosition.x+1][redPosition.y]!==0){
+                        setDirectionGhostRed('down');
+                        flag=true;
+                    }
+                    break;
+                case 3:
+                    if(newMap[redPosition.x-1][redPosition.y]!==0){
+                        setDirectionGhostRed('up');
+                        flag=true;
+                    }
+                    break;
+                default:
+                    break;
+                
+            }
+        }
+        const newX2 = redPosition.x;
+        const newY2 = redPosition.y;
+
+        setRedPosition({x:newX2,y:newY2});
+        
+        return;
+    }
+
+    setRedPosition({x:newX,y:newY});
+}
+
+
 
 useEffect(()=>{
     setTimeout(() => {
@@ -145,13 +236,11 @@ useEffect(()=>{
         const newX = pacmanPosition.x +x;
         
         if(newY===-1 && newX===9){
-            console.log("entra")
             setPacmanPosition({x:9,y:maps[9].length})
             setAnimanding(true);
             return;
         }
         if(newY===maps[9].length && newX===9 ){
-            console.log("entra")
             setPacmanPosition({x:9,y:-1})
             setAnimanding(true);
             return;
@@ -193,6 +282,9 @@ useEffect(()=>{
         // Aquí puedes llamar a las funciones de dibujo en el contexto 2D
         for (let i = 0; i < maps.length; i++) {
             for (let j = 0; j < maps[i].length; j++) {
+                
+                context.drawImage(ghostRed, (redPosition.y* WIDTH), (redPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
+
                 switch (maps[i][j]) {
                     case 0:
                         context.fillStyle = '#231942';
@@ -200,14 +292,12 @@ useEffect(()=>{
                         break;
                     case 1:
                         context.fillStyle = '#973cec';
+                        context.fillRect(j*WIDTH, i*WIDTH, WIDTH, WIDTH);
                         context.drawImage(fresa,(j*WIDTH),(i*WIDTH),TAM_STRAW,TAM_STRAW)
                         break;
                     case 2:
                         context.fillStyle = '#973cec';
                         context.fillRect(j*WIDTH, i*WIDTH, WIDTH, WIDTH);
-                        break;
-                    case 3:
-                        context.drawImage(pacman, (j* WIDTH), (i*WIDTH),TAM_PACMAN,TAM_PACMAN);
                         break;
                     default:
                         break;
@@ -245,6 +335,8 @@ useEffect(()=>{
                 context.drawImage(pacmanR, (pacmanPosition.y* WIDTH), (pacmanPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
             break;
         }
+
+        
         
         document.body.style.overflow = 'hidden';
         window.addEventListener('keydown', handleKeyDown);
@@ -254,8 +346,8 @@ useEffect(()=>{
             window.removeEventListener('keydown', handleKeyDown);
         };
 
-    }, [maps]);
-    
+    }, [maps,redPosition]);
+/*    
     useEffect(()=>{
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
@@ -265,8 +357,8 @@ useEffect(()=>{
         context.drawImage(ghostPink, (pinkPosition.y* WIDTH), (pinkPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
         context.drawImage(ghostOrange, (orangePosition.y* WIDTH), (orangePosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
 
-    },[redPosition,bluePosition,pinkPosition,orangePosition,maps])
-    
+    },[redPosition,bluePosition,pinkPosition,orangePosition])
+*/ 
     return(
         <>
             <div className='score'> <h2>Score: {score}</h2></div>

@@ -1,6 +1,16 @@
 import React, { useRef, useEffect,useState } from 'react';
 import ifresa from './assets/img/fresa.webp';
+import ipacmanR from './assets/img/pacman2open.png';
+import ipacmanL from './assets/img/pacman2Lopen.png';
+import ipacmanU from './assets/img/pacman2Uopen.png';
+import ipacmanD from './assets/img/pacman2DRopen.png';
+import ighostRed from './assets/img/red.png';
+import ighostBlue from './assets/img/blue.png';
+import ighostPink from './assets/img/pink.png';
+import ighostOrange from './assets/img/orange.png';
 
+import isoundWaka from './assets/sounds/pacman-waka-waka.mp3';
+import isoundSiren from './assets/sounds/pacman-siren.mp3';
 
 const WIDTH = 30;
 const WALL_WIDTH = 6;
@@ -64,28 +74,28 @@ export function Board(){
     const fresa = new Image;
     fresa.src = ifresa;
     const pacmanR = new Image;
-    pacmanR.src = "public/pacman2"+framePacman+".png";
+    pacmanR.src = ipacmanR+framePacman+".png";
     const pacmanL = new Image;
-    pacmanL.src = "public/pacman2L"+framePacman+".png";
+    pacmanL.src = ipacmanL+framePacman+".png";
     const pacmanU = new Image;
-    pacmanU.src = "public/pacman2U"+framePacman+".png";
+    pacmanU.src = ipacmanU+framePacman+".png";
     const pacmanD = new Image;
-    pacmanD.src = "public/pacman2DR"+framePacman+".png";
+    pacmanD.src = ipacmanD+framePacman+".png";
 
     const ghostRed = new Image;
-    ghostRed.src = "public/red.png";
+    ghostRed.src = ighostRed;
     const ghostBlue = new Image;
-    ghostBlue.src = "public/blue.png";
+    ghostBlue.src = ighostBlue;
     const ghostPink = new Image;
-    ghostPink.src = "public/pink.png";
+    ghostPink.src = ighostPink;
     const ghostOrange = new Image;
-    ghostOrange.src = "public/orange.png";
+    ghostOrange.src = ighostOrange;
 
     
-    const soundWaka = new Audio('public/pacman-waka-waka.mp3');
+    const soundWaka = new Audio(isoundWaka);
     soundRef.current = soundWaka;
 
-    const soundSiren = new Audio('public/pacman-siren.mp3');
+    const soundSiren = new Audio(isoundSiren);
     soundRef2.current = soundSiren;
 
 

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect,useState } from 'react';
-const WIDTH = 35;
+const WIDTH = 30;
 const WALL_WIDTH = 6;
 const TAM_STRAW=WIDTH+7;
 const TAM_PACMAN=WIDTH-3;

@@ -27,6 +27,11 @@ const TAM_STRAW=WIDTH+7;
 const TAM_PACMAN=WIDTH-3;
 const SPEED = 220;
 
+const SPEED_GHOST_RED = 220;
+const SPEED_GHOST_BLUE = 270;
+const SPEED_GHOST_PINK = 200;
+const SPEED_GHOST_ORANGE = 240;
+
 
 const WALL_SPACE = WIDTH-(WALL_WIDTH*2); 
 const map = [
@@ -60,23 +65,22 @@ export function Board(){
 
     const [maps,setMap] = useState(map);
     const [isAnimanding,setAnimanding] = useState(false);
-    const [isAnimandingGhost,setAnimandingGhost] = useState(true);
     const [pacmanPosition, setPacmanPosition] = useState({ x: 1, y: 1 });
     const [redPosition, setRedPosition] = useState({ x: 7, y: 8 });
-    const [bluePosition, setBluePosition] = useState({ x: 9, y: 9 });
-    const [pinkPosition, setPinkPosition] = useState({ x: 9, y: 10 });
-    const [orangePosition, setOrangePosition] = useState({ x: 9, y: 11 });
+    const [bluePosition, setBluePosition] = useState({ x: 7, y: 9 });
+    const [pinkPosition, setPinkPosition] = useState({ x: 7, y: 10 });
+    const [orangePosition, setOrangePosition] = useState({ x: 7, y: 11 });
     
-    const [directionGhostRed, setDirectionGhostRed] = useState('rigth');
+    const [directionGhostRed, setDirectionGhostRed] = useState('right');
+    const [directionGhostBlue, setDirectionGhostBlue] = useState('right');
+    const [directionGhostPink, setDirectionGhostPink] = useState('right');
+    const [directionGhostOrange, setDirectionGhostOrange] = useState('right');
 
-    const [direction, setDirection] = useState('rigth');
+    const [direction, setDirection] = useState('');
     const [score, setScore] = useState(0);
     const [directionBefore,setDirectionBefore] = useState('right');
     const [framePacman,setFrameP] = useState('open');
-    const [soundRep,setSound] = useState(false);
-    const [star,setStar] = useState(false);
-    const [isPlayingRef,setIsPlayingRef] = useState(false);
-    const [space, setSpace] = useState(0);
+
 
 
     
@@ -133,19 +137,37 @@ export function Board(){
         setAnimanding(true)        
     };
 
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            drawGhost(directionGhostRed, redPosition, 'red');
+        }, SPEED_GHOST_RED);
+    }, [redPosition]); 
+
 useEffect(()=>{
     setTimeout(() => {
-        requestAnimationFrame(drawGhost);
-      }, isAnimandingGhost?SPEED:0); 
-},[redPosition])
-    
+        drawGhost(directionGhostBlue, bluePosition, 'blue');
+    }, SPEED_GHOST_BLUE);
+},[bluePosition])
 
-const drawGhost = () => {
+useEffect(()=>{
+    setTimeout(() => {
+        drawGhost(directionGhostPink, pinkPosition, 'pink');
+    }, SPEED_GHOST_PINK);
+},[pinkPosition])
+
+useEffect(()=>{
+    setTimeout(() => {
+        drawGhost(directionGhostOrange, orangePosition, 'orange');
+    }, SPEED_GHOST_ORANGE);
+},[orangePosition])
+
+
+const drawGhost = (directionGhost, positionGhost, ghost) => {
+    
     let y = 0;
     let x =0;
     const newMap = [...map];
-   
-    switch (directionGhostRed) {
+    switch (directionGhost) {
         case 'up':
             x-=1;
             break;
@@ -155,55 +177,51 @@ const drawGhost = () => {
         case 'left':
             y-=1;
             break;
-        case 'rigth':
+        case 'right':
             y+=1;
             break;
         default:
         break;
     }
 
-    const newY = redPosition.y +y;
-    const newX = redPosition.x +x;
-    
+    const newY = positionGhost.y +y;
+    const newX = positionGhost.x +x;
+
     if(newY===-1 && newX===9){
-        setRedPosition({x:9,y:maps[9].length})
-        setAnimandingGhost(true);
+        setPositionGhost({x:9,y:maps[9].length}, ghost);
         return;
     }
     if(newY===maps[9].length && newX===9 ){
-        setRedPosition({x:9,y:-1})
-        setAnimandingGhost(true);
+        setPositionGhost({x:9,y:-1}, ghost);
         return;
     }
-
     if(newMap[newX][newY] ===0){
         let flag = false;
         while(!flag){
             let direction = Math.floor(Math.random() * 4);
-
             switch (direction) {
-
                 case 0:
-                    if(newMap[redPosition.x][redPosition.y+1]!==0){
-                        setDirectionGhostRed('rigth');
+                    if(newMap[positionGhost.x][positionGhost.y+1]!==0){
+                        setDirectionGhost('right', ghost);
                         flag=true;
                     }
                     break;
                 case 1:
-                    if(newMap[redPosition.x][redPosition.y-1]!==0){
-                        setDirectionGhostRed('left');
+                    
+                    if(newMap[positionGhost.x][positionGhost.y-1]!==0){
+                        setDirectionGhost('left', ghost);
                         flag=true;
                     }
                     break;
                 case 2:
-                    if(newMap[redPosition.x+1][redPosition.y]!==0){
-                        setDirectionGhostRed('down');
+                    if(newMap[positionGhost.x+1][positionGhost.y]!==0){
+                        setDirectionGhost('down', ghost);
                         flag=true;
                     }
                     break;
                 case 3:
-                    if(newMap[redPosition.x-1][redPosition.y]!==0){
-                        setDirectionGhostRed('up');
+                    if(newMap[positionGhost.x-1][positionGhost.y]!==0){
+                        setDirectionGhost('up', ghost);
                         flag=true;
                     }
                     break;
@@ -212,15 +230,58 @@ const drawGhost = () => {
                 
             }
         }
-        const newX2 = redPosition.x;
-        const newY2 = redPosition.y;
+        const newX2 = positionGhost.x;
+        const newY2 = positionGhost.y;
 
-        setRedPosition({x:newX2,y:newY2});
+        setPositionGhost(newX2,newY2, ghost);
         
         return;
     }
 
-    setRedPosition({x:newX,y:newY});
+    
+    setPositionGhost(newX,newY, ghost);
+}
+
+const setPositionGhost = (x,y, ghost) => {
+    const newX = x;
+    const newY = y;
+
+    switch(ghost){
+        case 'red':
+            setRedPosition({x:newX,y:newY});
+            break;
+        case 'blue':
+            setBluePosition({x:newX,y:newY});
+            break;
+        case 'pink':
+            setPinkPosition({x:newX,y:newY});
+            break;
+        case 'orange':
+            setOrangePosition({x:newX,y:newY});
+            break;
+        default:
+            break;
+    }
+}
+
+
+const setDirectionGhost = (directionGhost, ghost) => {
+    switch (ghost) {
+        case 'red':
+            setDirectionGhostRed(directionGhost);
+            break;
+        case 'blue':
+            setDirectionGhostBlue(directionGhost);
+            break;
+        case 'pink':
+            setDirectionGhostPink(directionGhost);
+            break;
+        case 'orange':
+            setDirectionGhostOrange(directionGhost);
+            break;
+        default:
+            break;
+    }
 }
 
 
@@ -305,7 +366,7 @@ useEffect(()=>{
         for (let i = 0; i < maps.length; i++) {
             for (let j = 0; j < maps[i].length; j++) {
                 
-                context.drawImage(ghostRed, (redPosition.y* WIDTH), (redPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
+                
 
                 switch (maps[i][j]) {
                     case 0:
@@ -358,6 +419,11 @@ useEffect(()=>{
             break;
         }
 
+        context.drawImage(ghostRed, (redPosition.y* WIDTH), (redPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
+        context.drawImage(ghostBlue, (bluePosition.y* WIDTH), (bluePosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
+        context.drawImage(ghostPink, (pinkPosition.y* WIDTH), (pinkPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
+        context.drawImage(ghostOrange, (orangePosition.y* WIDTH), (orangePosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
+
         
         
         document.body.style.overflow = 'hidden';
@@ -368,19 +434,8 @@ useEffect(()=>{
             window.removeEventListener('keydown', handleKeyDown);
         };
 
-    }, [maps,redPosition]);
-/*    
-    useEffect(()=>{
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-
-        context.drawImage(ghostRed, (redPosition.y* WIDTH), (redPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
-        context.drawImage(ghostBlue, (bluePosition.y* WIDTH), (bluePosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
-        context.drawImage(ghostPink, (pinkPosition.y* WIDTH), (pinkPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
-        context.drawImage(ghostOrange, (orangePosition.y* WIDTH), (orangePosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
-
-    },[redPosition,bluePosition,pinkPosition,orangePosition])
-*/ 
+    }, [maps,redPosition,bluePosition,pinkPosition,orangePosition]);
+    
     return(
         <>
             <div className='score'> <h2>Score: {score}</h2></div>

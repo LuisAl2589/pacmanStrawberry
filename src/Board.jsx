@@ -1,5 +1,6 @@
 import React, { useRef, useEffect,useState } from 'react';
-import ifresa from './assets/img/fresa.webp';
+import './Board.css';
+import ifresa from './assets/img/fresa3.png';
 
 
 import pacmanRopen from './assets/img/pacmanRopen.png';
@@ -21,9 +22,9 @@ import ighostOrange from './assets/img/orange.png';
 import isoundWaka from './assets/sounds/pacman-waka-waka.mp3';
 import isoundSiren from './assets/sounds/pacman-siren.mp3';
 
-const WIDTH = 30;
+const WIDTH = 27;
 const WALL_WIDTH = 6;
-const TAM_STRAW=WIDTH+7;
+const TAM_STRAW=WIDTH-5;
 const TAM_PACMAN=WIDTH-3;
 const SPEED = 220;
 
@@ -34,9 +35,10 @@ const SPEED_GHOST_ORANGE = 240;
 
 
 const WALL_SPACE = WIDTH-(WALL_WIDTH*2); 
+
 const map = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0],
+    [0,2,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0],
     [0,1,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0],
     [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
     [0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,1,0],
@@ -56,6 +58,8 @@ const map = [
     [0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0],
     [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+
+    const map2 = [...map];
 
 export function Board(){
     const canvasRef = useRef(null);
@@ -77,6 +81,7 @@ export function Board(){
     const [directionGhostOrange, setDirectionGhostOrange] = useState('right');
 
     const [direction, setDirection] = useState('');
+    const [over, setOver] = useState(false);
     const [score, setScore] = useState(0);
     const [directionBefore,setDirectionBefore] = useState('right');
     const [framePacman,setFrameP] = useState('open');
@@ -116,6 +121,35 @@ export function Board(){
         setStar(true);
     };
 
+    const restart=()=>{
+        setOver(false);
+        setScore(0);
+        setPacmanPosition({ x: 1, y: 1 });
+        setRedPosition({ x: 7, y: 8 });
+        setBluePosition({ x: 7, y: 9 });
+        setPinkPosition({ x: 7, y: 10 });
+        setOrangePosition({ x: 7, y: 11 });
+        setDirectionGhostRed('right');
+        setDirectionGhostBlue('right');
+        setDirectionGhostPink('right');
+        setDirectionGhostOrange('right');
+        setDirection('');
+        setDirectionBefore('right');
+        setAnimanding(false);
+        
+        const newMap = [...map];
+
+        for (let i = 0; i < newMap.length; i++) {
+            for (let j = 0; j < newMap[i].length; j++) {
+                if(newMap[i][j]===2){
+                    newMap[i][j]=1;
+                }
+            }
+        }
+
+        setMap(newMap);
+    }
+
     const handleKeyDown = (event) => { 
         setDirectionBefore(direction)
         switch (event.key) {
@@ -138,24 +172,28 @@ export function Board(){
     };
 
     useEffect(() => {
+        if(over) return
         const timerId = setTimeout(() => {
             drawGhost(directionGhostRed, redPosition, 'red');
         }, SPEED_GHOST_RED);
     }, [redPosition]); 
 
 useEffect(()=>{
+    if(over) return
     setTimeout(() => {
         drawGhost(directionGhostBlue, bluePosition, 'blue');
     }, SPEED_GHOST_BLUE);
 },[bluePosition])
 
 useEffect(()=>{
+    if(over) return
     setTimeout(() => {
         drawGhost(directionGhostPink, pinkPosition, 'pink');
     }, SPEED_GHOST_PINK);
 },[pinkPosition])
 
 useEffect(()=>{
+    if(over) return
     setTimeout(() => {
         drawGhost(directionGhostOrange, orangePosition, 'orange');
     }, SPEED_GHOST_ORANGE);
@@ -163,10 +201,12 @@ useEffect(()=>{
 
 
 const drawGhost = (directionGhost, positionGhost, ghost) => {
-    
     let y = 0;
     let x =0;
     const newMap = [...map];
+
+    
+
     switch (directionGhost) {
         case 'up':
             x-=1;
@@ -230,8 +270,11 @@ const drawGhost = (directionGhost, positionGhost, ghost) => {
                 
             }
         }
+
         const newX2 = positionGhost.x;
         const newY2 = positionGhost.y;
+
+        
 
         setPositionGhost(newX2,newY2, ghost);
         
@@ -287,9 +330,10 @@ const setDirectionGhost = (directionGhost, ghost) => {
 
 
 useEffect(()=>{
+    if(over) return
     setTimeout(() => {
         requestAnimationFrame(draw);
-      }, isAnimanding?SPEED:0); 
+    }, isAnimanding?SPEED:0); 
 },[pacmanPosition,isAnimanding])
 
 
@@ -344,7 +388,7 @@ useEffect(()=>{
             newMap[newX][newY]=2;
 
             soundRef.current.currentTime = 0.4;
-            soundRef.current.play();                      
+            soundRef.current.play();                    
             
             setScore(newScore);
         }
@@ -362,7 +406,6 @@ useEffect(()=>{
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        // Aquí puedes llamar a las funciones de dibujo en el contexto 2D
         for (let i = 0; i < maps.length; i++) {
             for (let j = 0; j < maps[i].length; j++) {
                 
@@ -424,7 +467,12 @@ useEffect(()=>{
         context.drawImage(ghostPink, (pinkPosition.y* WIDTH), (pinkPosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
         context.drawImage(ghostOrange, (orangePosition.y* WIDTH), (orangePosition.x*WIDTH),TAM_PACMAN,TAM_PACMAN);
 
-        
+        if((pacmanPosition.x===redPosition.x && pacmanPosition.y===redPosition.y)
+        || (pacmanPosition.x===bluePosition.x && pacmanPosition.y===bluePosition.y)
+        || (pacmanPosition.x===pinkPosition.x && pacmanPosition.y===pinkPosition.y)
+        || (pacmanPosition.x===orangePosition.x && pacmanPosition.y===orangePosition.y)){
+            setOver(true);
+        }
         
         document.body.style.overflow = 'hidden';
         window.addEventListener('keydown', handleKeyDown);
@@ -435,7 +483,7 @@ useEffect(()=>{
         };
 
     }, [maps,redPosition,bluePosition,pinkPosition,orangePosition]);
-    
+
     return(
         <>
             <div className='score'> <h2>Score: {score}</h2></div>
@@ -443,6 +491,15 @@ useEffect(()=>{
             <div>
             <canvas ref={canvasRef} width={map[0].length * WIDTH} height={900} />
             </div>
+        {
+            over && (
+                <div className='game-over'>
+                    <h1>Game Over</h1>
+                    <button onClick={restart}>Play Again</button>
+                </div>
+            )
+        
+        }
             
         </>
     )

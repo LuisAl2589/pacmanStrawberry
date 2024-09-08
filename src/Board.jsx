@@ -1,6 +1,6 @@
 import React, { useRef, useEffect,useState } from 'react';
 import './Board.css';
-import ifresa from './assets/img/fresa3.png';
+import ifresa from './assets/img/fresa.webp';
 
 
 import pacmanRopen from './assets/img/pacmanRopen.png';
@@ -24,7 +24,7 @@ import isoundSiren from './assets/sounds/pacman-siren.mp3';
 
 const WIDTH = 27;
 const WALL_WIDTH = 6;
-const TAM_STRAW=WIDTH-5;
+const TAM_STRAW=WIDTH+2;
 const TAM_PACMAN=WIDTH-3;
 const SPEED = 220;
 
